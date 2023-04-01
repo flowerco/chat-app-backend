@@ -1,17 +1,21 @@
 const { User } = require("../models/schema");
 
-const fetchUsers = async (req, res) => {
+const searchUsers = async (req, res) => {
 
-  const { searchString } = req.body;
+  const { contactsArray, searchString } = req.body;
   try {
     const matchedUsers = await User.find({
-      "$expr": {
-        "$regexMatch": {
-          "input": { "$concat": ["$firstName", " ", "$lastName"] },
-          "regex": searchString,  //Your text search here
-          "options": "i"
-        }
-      }
+      $and: [
+        { _id: {$nin: contactsArray} },
+        { "$expr": {
+          "$regexMatch": {
+            "input": { "$concat": ["$firstName", " ", "$lastName"] },
+            "regex": searchString,  //Your text search here
+            "options": "i"
+            }
+          }
+        },
+      ]
     });
     res.status(200);
     res.send(matchedUsers);
@@ -26,7 +30,7 @@ const fetchUsers = async (req, res) => {
  const addContact = async (req, res) => {
   const contact = req.body;
   const filter = { _id: contact._id };
-  
+
   // const update = { contacts: }
   
   try {
@@ -38,4 +42,4 @@ const fetchUsers = async (req, res) => {
  }
 
 
-module.exports = { fetchUsers };
+module.exports = { searchUsers };

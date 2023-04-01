@@ -37,10 +37,16 @@ const login = async (req, res) => {
         res.sendStatus(500);
       } else {
         res.status(200);
-        res.send({ firstName: testUser.firstName, lastName: testUser.lastName });
+        res.send({
+          firstName: testUser.firstName,
+          lastName: testUser.lastName,
+          _id: testUser._id,
+          contacts: testUser.contacts,
+          userImg: testUser.userImg
+        });
       }
     });
-  } catch(error) {
+  } catch (error) {
     res.status(500);
     res.send(error);
   }
