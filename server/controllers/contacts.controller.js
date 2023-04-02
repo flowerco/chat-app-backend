@@ -34,6 +34,22 @@ const addContact = async (req, res) => {
   }
 }
 
+const deleteContact = async (req, res) => {
+  const { currentUserId, contactId } = req.body;
+  console.log(`Deleting user ${contactId} from the contact list of user ${currentUserId}`);
+  try {
+    const currentUser = await User.findOne({ _id: currentUserId });
+    const contactIndex = currentUser.contacts.indexOf(contactId);
+    if (contactIndex > -1) {
+      currentUser.contacts.splice(contactIndex, 1);
+      await currentUser.save();
+    }
+    return res.status(200).json(currentUser);
+  } catch (error) {
+    return res.status(500).json({message: 'Failed to add contact'});
+  }
+}
+
 const clearContacts = async (req, res) => {
   const { userId } = req.body;
   try {
@@ -47,4 +63,4 @@ const clearContacts = async (req, res) => {
 }
 
 
-module.exports = { fetchContacts, addContact, clearContacts }
+module.exports = { fetchContacts, addContact, deleteContact, clearContacts }
