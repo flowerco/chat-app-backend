@@ -1,4 +1,38 @@
+const { SignJWT, jwtVerify } = require('jose');
 const { User } = require('../models/schema');
+const { serialize } = require('cookie');
+
+const removeEmailAndPassword = (user) => {
+  return {
+    _id: user._id,
+    firstName: user.firstName,
+    lastName: user.lastName,
+    userImg: user.userImg,
+    contacts: user.contacts,
+    chats: user.chats,
+  }
+}
+
+const verifyLogin = async (req, res) => {
+  const jwt = req.cookies[process.env.COOKIE_NAME];
+  if (jwt) {
+    const payload = await verifyJwt(jwt);
+    console.log('Jwt received: ', payload);
+    if (payload) {
+      // Return the user, but not their email or password
+      let user = await User.findOne({
+        _id: payload.payload.id,
+      }).select(['-email', '-password']);
+
+      res.status(200);
+      res.send(user);
+    } else {
+      res.sendStatus(403);
+    }
+  } else {
+    res.sendStatus(401);
+  }
+};
 
 const register = async (req, res) => {
   const user = req.body;
@@ -12,9 +46,21 @@ const register = async (req, res) => {
       // If none found, create new User
       console.log('User data received: ', user);
       const newUserDoc = new User(user);
-      newUserDoc.save();
-      res.status(200);
-      res.send(newUserDoc);
+      newUserDoc.save().then(async (newUser) => {
+
+        const jwt = await createJwt(newUser);
+        res.setHeader(
+          'Set-Cookie',
+          serialize(process.env.COOKIE_NAME, jwt, {
+            httpOnly: true,
+            path: '/',
+            maxAge: 60 * 60 * 8,
+          })
+        );
+
+        res.status(200);
+        res.send(removeEmailAndPassword(newUser));
+      });
     }
   } catch (error) {
     res.status(500);
@@ -31,19 +77,23 @@ const login = async (req, res) => {
       return;
     }
 
-    testUser.comparePassword(password, function (err, isMatch) {
+    testUser.comparePassword(password, async function (err, isMatch) {
       if (err) throw err;
       if (!isMatch) {
         res.sendStatus(500);
       } else {
+        const jwt = await createJwt(testUser);
+        res.setHeader(
+          'Set-Cookie',
+          serialize(process.env.COOKIE_NAME, jwt, {
+            httpOnly: true,
+            path: '/',
+            maxAge: 60 * 60 * 8,
+          })
+        );
+        // Remove the login details from the returned user.
         res.status(200);
-        res.send({
-          firstName: testUser.firstName,
-          lastName: testUser.lastName,
-          _id: testUser._id,
-          contacts: testUser.contacts,
-          userImg: testUser.userImg
-        });
+        res.send(removeEmailAndPassword(testUser));
       }
     });
   } catch (error) {
@@ -52,4 +102,38 @@ const login = async (req, res) => {
   }
 };
 
-module.exports = { register, login };
+const logout = (req, res) => {
+  // Just create an invalid, expired JWT and set it in the cookie
+  res.setHeader(
+    'Set-Cookie',
+    serialize(process.env.COOKIE_NAME, 'Nope', {
+      httpOnly: true,
+      path: '/',
+      maxAge: -1,
+    })
+  );
+  res.status(200);
+  res.send({});
+};
+
+const createJwt = async (user) => {
+  const alg = 'HS256';
+
+  const jwt = await new SignJWT({ id: user._id, firstName: user.firstName })
+    .setProtectedHeader({ alg, typ: 'JWT' })
+    .setIssuedAt()
+    .setExpirationTime('8h')
+    .sign(new TextEncoder().encode(process.env.JWT_SECRET));
+
+  return jwt;
+};
+
+const verifyJwt = async (jwt) => {
+  const payload = await jwtVerify(
+    jwt,
+    new TextEncoder().encode(process.env.JWT_SECRET)
+  );
+  return payload;
+};
+
+module.exports = { register, login, logout, verifyLogin, verifyJwt };

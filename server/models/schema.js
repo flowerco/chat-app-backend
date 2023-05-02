@@ -3,6 +3,23 @@ const bcrypt = require('bcrypt');
 
 const SALT_WORK_FACTOR = 10;
 
+const chatSchema = new mongoose.Schema({
+  userList: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }] 
+})
+
+chatSchema.post('findOneAndDelete', async function(chat, next) {
+  // After deleting a chat, remove the chat ID from any users in that chat.
+  const userList = chat.userList.map(user => user._id);
+  await User.updateMany({ _id: { $in: userList }}, {
+    $pull: {
+      chats: chat._id
+    }
+  });
+  next();
+})
+
+const Chat = mongoose.model('Chat', chatSchema);
+
 const userSchema = new mongoose.Schema({
   firstName: { type: String, required: true },
   lastName: { type: String, required: true },
@@ -10,8 +27,8 @@ const userSchema = new mongoose.Schema({
   password: { type: String, required: true },
   userImg: String,
   contacts: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
+  chats: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Chat' }] 
 });
-
 
 userSchema.pre('save', function(next) { 
   let user = this;
@@ -45,5 +62,5 @@ userSchema.methods.comparePassword = function(candidatePassword, cb) {
 
 
 const User = mongoose.model('User', userSchema);
-  
-module.exports = { User };
+
+module.exports = { User, Chat };
