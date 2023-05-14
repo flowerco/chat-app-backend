@@ -25,9 +25,10 @@ const userSchema = new mongoose.Schema({
   lastName: { type: String, required: true },
   email: { type: String, unique: true, required: true},
   password: { type: String, required: true },
-  userImg: String,
+  userImg: { type: String, default: '' },
   contacts: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
-  chats: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Chat' }] 
+  chats: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Chat' }],
+  currentChat: { type: String, default: '' }
 });
 
 userSchema.pre('save', function(next) { 

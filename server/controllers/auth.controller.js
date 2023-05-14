@@ -17,7 +17,6 @@ const verifyLogin = async (req, res) => {
   const jwt = req.cookies[process.env.COOKIE_NAME];
   if (jwt) {
     const payload = await verifyJwt(jwt);
-    console.log('Jwt received: ', payload);
     if (payload) {
       // Return the user, but not their email or password
       let user = await User.findOne({

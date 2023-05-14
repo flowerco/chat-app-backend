@@ -14,6 +14,7 @@ const fetchUser = async (req, res) => {
         lastName: user.lastName,
         contacts: user.contacts,
         chats: user.chats,
+        currentChat: user.currentChat,
         userImg: user.userImg,
       });
     } else {
@@ -52,18 +53,16 @@ const searchUsers = async (req, res) => {
   }
 };
 
-const addContact = async (req, res) => {
-  const contact = req.body;
-  const filter = { _id: contact._id };
-
-  // const update = { contacts: }
-
+const updateCurrentChat = async (req, res) => {
+  const { currentUserId, chatId } = req.body;
   try {
-    // TODO: source the _id of the current user so that we can get their record and update their contacts.
-    console.log('You just tried to add a contact!');
+    const user = await User.findOne({ _id: currentUserId });
+    user.currentChat = chatId.toString();
+    await user.save();
+    return res.status(200).json(chatId);
   } catch (error) {
-    console.log(error);
+    return res.status(500).json({message: 'Failed to update current chat'});
   }
-};
+}
 
-module.exports = { fetchUser, searchUsers };
+module.exports = { fetchUser, searchUsers, updateCurrentChat };

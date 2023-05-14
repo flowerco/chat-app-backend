@@ -10,6 +10,8 @@ const {
   fetchChats,
   clearChats,
   deleteChat,
+  fetchChatForContact,
+  fetchChatById,
 } = require('./controllers/chat.controller');
 const {
   addContact,
@@ -17,7 +19,7 @@ const {
   clearContacts,
   deleteContact,
 } = require('./controllers/contacts.controller');
-const { searchUsers, fetchUser } = require('./controllers/user.controller');
+const { searchUsers, fetchUser, updateCurrentChat } = require('./controllers/user.controller');
 
 const router = new Router();
 
@@ -35,8 +37,11 @@ router.post('/api/fetchContacts', fetchContacts);
 router.post('/api/clearContacts', clearContacts);
 
 router.post('/api/addChat', addChat);
+router.post('/api/updateCurrentChat', updateCurrentChat);
 router.post('/api/deleteChat', deleteChat);
 router.post('/api/fetchChats', fetchChats);
+router.post('/api/fetchChatForContact', fetchChatForContact);
+router.post('/api/fetchChatById', fetchChatById);
 router.post('/api/clearChats', clearChats);
 
 module.exports = router;
