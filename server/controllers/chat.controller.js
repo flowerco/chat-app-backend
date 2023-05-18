@@ -67,7 +67,7 @@ const fetchChatForContact = async (req, res) => {
 
 const fetchChatById = async (req, res) => {
   const { userId, chatId } = req.body;
-  console.log(`Looking for chat ${chatId} on user ${userId}`);
+  // console.log(`Looking for chat ${chatId} on user ${userId}`);
   try {
     const chat = await Chat.findOne({ _id: chatId }).populate('userList');
     if (chat) {

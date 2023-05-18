@@ -10,6 +10,7 @@ const removeEmailAndPassword = (user) => {
     userImg: user.userImg,
     contacts: user.contacts,
     chats: user.chats,
+    currentChat: user.currentChat,
   }
 }
 
