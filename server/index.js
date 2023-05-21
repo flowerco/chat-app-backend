@@ -53,44 +53,35 @@ const io = require('socket.io')(server, {
 // The example code uses rooms created on the server, but we want to keep all chat data on the client.
 // Problem - the chats need to be shared: if I create a chat with Tom, he needs to see the room also.
 // The user schema should probably include rooms (with a property for accepted or not...) but not the content.
-const liveChats = {};
 
 io.on('connection', (socket) => {
   console.log('Connected to socket. Yay.');
 
-  socket.on('send-message', async (chat) => {
-    console.log('Message received: ', chat);
-    socket.emit('send-message', chat);
+  socket.on('send-message', async (chatId, senderId, message) => {
+    console.log(
+      `Message from ${senderId} received in chat room ${chatId}: ${message}`
+    );
+    socket.to(chatId).emit('send-message', {
+      message,
+      from: senderId,
+    });
   });
 
   socket.on('join-chat', async (chatId, name) => {
     console.log(`${name} is joining room: ${chatId}`);
     socket.join(chatId);
-    if (liveChats[chatId]) {
-      liveChats[chatId].users.push(name);
-    } else {
-      liveChats[chatId] = {
-        users: [name],
-      };
-    }
     // Note: only broadcasts to other users in the chat, not the sender.
     socket.to(chatId).emit('user-connected', name);
   });
 
-  socket.on('send-chat-message', (chat, message) => {
-    socket.to(chat).emit('chat-message', {
-      message,
-      name: liveChats[chat].users[socket.id],
-    });
+  socket.on('leave-chat', async (chatId, name) => {
+    console.log(`${name} is leaving room: ${chatId}`);
+    socket.leave(chatId);
+    // Note: only broadcasts to other users in the chat, not the sender.
+    socket.to(chatId).emit('user-disconnected', name);
   });
 
   socket.on('disconnect', () => {
     console.log('Disconnected... Boo and sucks!');
-    // getUserRooms(socket).forEach(chat => {
-    //   // Socket.io automatically removes user from chat when disconnected,
-    //   // so we don't need to code that.
-    //   socket.to(chat).emit('user-disconnected', liveChats[chat].users[socket.id]);
-    //   delete liveChats[chat].users[socket.id];
-    // });
   });
 });
