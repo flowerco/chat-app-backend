@@ -65,4 +65,16 @@ const updateCurrentChat = async (req, res) => {
   }
 }
 
-module.exports = { fetchUser, searchUsers, updateCurrentChat };
+const updateUserImage = async (req, res) => {
+  const { currentUserId, newImg } = req.body;
+  try {
+    const user = await User.findOne({ _id: currentUserId });
+    user.userImg = newImg;
+    await user.save();
+    return res.status(201).json(newImg);
+  } catch (error) {
+    return res.status(500).json({message: 'Failed to update user image'});
+  }
+}
+
+module.exports = { fetchUser, searchUsers, updateCurrentChat, updateUserImage };
