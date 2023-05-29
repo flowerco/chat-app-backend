@@ -7,8 +7,13 @@ const findAndAdd = async (userId, addId, type) => {
   if (!currentUser[type].includes(addId)) {
     currentUser[type].push(addId);
     console.log(currentUser[type]);
+    // For chats, set the currentChat to the chat just created, so it shows up on screen immediately.
+    if (type === 'chats') {
+      currentUser.currentChat = addId;
+    }
     await currentUser.save();
   }
+
   
   return currentUser;
 }

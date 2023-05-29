@@ -16,6 +16,8 @@ const fetchUser = async (req, res) => {
         chats: user.chats,
         currentChat: user.currentChat,
         userImg: user.userImg,
+        keepTime: user.keepTime,
+        isSearchable: user.isSearchable
       });
     } else {
       res.sendStatus(404);

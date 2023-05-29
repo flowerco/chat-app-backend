@@ -28,7 +28,9 @@ const userSchema = new mongoose.Schema({
   userImg: { type: String, default: '' },
   contacts: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
   chats: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Chat' }],
-  currentChat: { type: String, default: '' }
+  currentChat: { type: String, default: '' },
+  keepTime: {type: Number, default: 10},
+  isSearchable: {type: Boolean, default: true}
 });
 
 userSchema.pre('save', function(next) { 

@@ -1,5 +1,6 @@
 const { User, Chat } = require('../models/schema');
 const { findAndAdd } = require('../utils/utils');
+const { updateCurrentChat } = require('./user.controller');
 
 const fetchChats = async (req, res) => {
   const { userId } = req.body;
@@ -108,13 +109,14 @@ const addChat = async (req, res) => {
     });
     newChat.save().then(async (chat) => {
       // Add the new chat to the current user's chat list.
+      // This function also updates the current chat if you're adding a chat.
       const currentUser = await findAndAdd(currentUserId, chat._id, 'chats');
       console.log('Post update: ', currentUser);
 
       // Don't forget to add the new chat to the contact's chat list too!
       findAndAdd(contactId, chat._id, 'chats');
 
-      return res.status(201).json(currentUser);
+      return res.status(201).json(chat._id);
     });
   } catch (error) {
     return res.status(500).json({ message: 'Failed to add chat' });
@@ -143,6 +145,7 @@ const clearChats = async (req, res) => {
   try {
     const currentUser = await User.findOne({ _id: userId });
     currentUser.chats = [];
+    currentUser.currentChat = '';
     await currentUser.save();
     return res.status(201).json(currentUser);
   } catch (error) {
