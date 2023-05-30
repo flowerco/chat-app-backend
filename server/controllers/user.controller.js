@@ -79,4 +79,16 @@ const updateUserImage = async (req, res) => {
   }
 }
 
-module.exports = { fetchUser, searchUsers, updateCurrentChat, updateUserImage };
+const updateUserProperty = async (req, res) => {
+  const { currentUserId, propertyName, propertyValue } = req.body;
+  try {
+    const user = await User.findOne({ _id: currentUserId });
+    user[propertyName] = propertyValue;
+    await user.save();
+    return res.status(201).json(propertyValue);
+  } catch (error) {
+    return res.status(500).json({message: `Failed to updated user ${propertyName}`});
+  }
+}
+
+module.exports = { fetchUser, searchUsers, updateCurrentChat, updateUserImage, updateUserProperty };
