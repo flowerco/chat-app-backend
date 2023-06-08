@@ -5,8 +5,8 @@ const cors = require('cors');
 const router = require('./router');
 const dotenv = require('dotenv');
 const { verifyJwt } = require('./controllers/auth.controller');
-const { config } = require('./config');
 
+const { config } = require('./config');
 dotenv.config();
 
 const app = express();

@@ -22,8 +22,6 @@ const {
 const {
   searchUsers,
   fetchUser,
-  updateCurrentChat,
-  updateUserImage,
   updateUserProperty,
 } = require('./controllers/user.controller');
 
@@ -36,7 +34,6 @@ router.get('/logout', logout);
 
 router.post('/api/fetchUser', fetchUser);
 router.post('/api/searchUsers', searchUsers);
-router.post('/api/updateUserImage', updateUserImage);
 router.post('/api/updateUserProperty', updateUserProperty);
 
 router.post('/api/addContact', addContact);

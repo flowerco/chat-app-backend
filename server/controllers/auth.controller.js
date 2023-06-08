@@ -11,6 +11,8 @@ const removeEmailAndPassword = (user) => {
     contacts: user.contacts,
     chats: user.chats,
     currentChat: user.currentChat,
+    keepTime: user.keepTime,
+    isSearchable: user.isSearchable,
   }
 }
 

@@ -18,7 +18,7 @@ const fetchContacts = async (req, res) => {
 const addContact = async (req, res) => {
 
   const { currentUserId, newContactId } = req.body;
-  console.log(`Adding user ${newContactId} as a new contact for user ${currentUserId}`);
+  // console.log(`Adding user ${newContactId} as a new contact for user ${currentUserId}`);
   try {
     const currentUser = await User.findOne({ _id: currentUserId });
     console.log(currentUser);
@@ -27,7 +27,6 @@ const addContact = async (req, res) => {
       console.log(currentUser.contacts);
       await currentUser.save();
     }
-    console.log('Post update: ', currentUser);
     return res.status(201).json(currentUser);
   } catch (error) {
     return res.status(500).json({message: 'Failed to add contact'});

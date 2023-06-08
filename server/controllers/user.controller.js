@@ -34,6 +34,7 @@ const searchUsers = async (req, res) => {
     const matchedUsers = await User.find({
       $and: [
         { _id: { $nin: contactsArray } },
+        { isSearchable: true },
         {
           $expr: {
             $regexMatch: {
@@ -55,29 +56,6 @@ const searchUsers = async (req, res) => {
   }
 };
 
-const updateCurrentChat = async (req, res) => {
-  const { currentUserId, chatId } = req.body;
-  try {
-    const user = await User.findOne({ _id: currentUserId });
-    user.currentChat = chatId.toString();
-    await user.save();
-    return res.status(200).json(chatId);
-  } catch (error) {
-    return res.status(500).json({message: 'Failed to update current chat'});
-  }
-}
-
-const updateUserImage = async (req, res) => {
-  const { currentUserId, newImg } = req.body;
-  try {
-    const user = await User.findOne({ _id: currentUserId });
-    user.userImg = newImg;
-    await user.save();
-    return res.status(201).json(newImg);
-  } catch (error) {
-    return res.status(500).json({message: 'Failed to update user image'});
-  }
-}
 
 const updateUserProperty = async (req, res) => {
   const { currentUserId, propertyName, propertyValue } = req.body;
@@ -91,4 +69,4 @@ const updateUserProperty = async (req, res) => {
   }
 }
 
-module.exports = { fetchUser, searchUsers, updateCurrentChat, updateUserImage, updateUserProperty };
+module.exports = { fetchUser, searchUsers, updateUserProperty };
