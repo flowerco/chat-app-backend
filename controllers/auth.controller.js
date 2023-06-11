@@ -72,6 +72,7 @@ const register = async (req, res) => {
 
 const login = async (req, res) => {
   const { email, password } = req.body;
+  console.log('Running login');
   try {
     const testUser = await User.findOne({ email });
     if (!testUser) {
@@ -93,6 +94,7 @@ const login = async (req, res) => {
             maxAge: 60 * 60 * 8,
           })
         );
+        console.log('User found: ', testUser);
         // Remove the login details from the returned user.
         res.status(200);
         res.send(removeEmailAndPassword(testUser));

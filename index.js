@@ -15,6 +15,10 @@ const port = config.port;
 // Middleware for all requests to the express server
 app.use(cookieParser());
 
+// TODO: For secure connections we need a specific origin here. Can we deploy to railway 
+// and use the SameSite option, or should we deploy elsewhere and use that deployment
+// location as the origin??? 
+
 var corsOptions = {
   origin: `http://localhost:3000`,
   credentials: true,
@@ -23,6 +27,7 @@ var corsOptions = {
 app.use(cors(corsOptions));
 
 app.use(/^\/api\/.*/, async (req, res, next) => {
+  console.log('Verifying JWT in middleware.');
   const jwt = req.cookies[process.env.COOKIE_NAME];
   if (jwt) {
     const payload = await verifyJwt(jwt);
