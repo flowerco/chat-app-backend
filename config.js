@@ -16,7 +16,11 @@ const config = {
 
   port: process.env.PORT
   ? process.env.PORT
-  : 3002
+  : 3002,
+
+  corsUrl: process.env.CORS_URL
+  ? process.env.CORS_URL
+  : 'http://localhost:3000'
 }
 
 module.exports = { config };
