@@ -91,6 +91,8 @@ const login = async (req, res) => {
           'Set-Cookie',
           serialize(process.env.COOKIE_NAME, jwt, {
             httpOnly: true,
+            sameSite: 'none',
+            secure: true,
             path: '/',
             maxAge: 60 * 60 * 8,
           })
@@ -113,6 +115,8 @@ const logout = (req, res) => {
     'Set-Cookie',
     serialize(process.env.COOKIE_NAME, 'Nope', {
       httpOnly: true,
+      sameSite: 'none',
+      secure: true,
       path: '/',
       maxAge: -1,
     })
