@@ -51,6 +51,7 @@ const register = async (req, res) => {
       newUserDoc.save().then(async (newUser) => {
 
         const jwt = await createJwt(newUser);
+        console.log(`Setting cookie ${process.env.COOKIE_NAME} with jwt: `, jwt);
         res.setHeader(
           'Set-Cookie',
           serialize(process.env.COOKIE_NAME, jwt, {
@@ -59,7 +60,7 @@ const register = async (req, res) => {
             maxAge: 60 * 60 * 8,
           })
         );
-
+        console.log('Cookie created');
         res.status(200);
         res.send(removeEmailAndPassword(newUser));
       });
@@ -94,7 +95,7 @@ const login = async (req, res) => {
             maxAge: 60 * 60 * 8,
           })
         );
-        console.log('User found: ', testUser);
+        console.log('User found.');
         // Remove the login details from the returned user.
         res.status(200);
         res.send(removeEmailAndPassword(testUser));
