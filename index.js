@@ -20,7 +20,7 @@ app.use(cookieParser());
 // location as the origin??? 
 
 var corsOptions = {
-  origin: `http://localhost:3000`,
+  origin: config.corsUrl,
   credentials: true,
   optionsSuccessStatus: 200, // some legacy browsers (IE11, various SmartTVs) choke on 204
 };
