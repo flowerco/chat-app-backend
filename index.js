@@ -20,6 +20,7 @@ app.use(cookieParser());
 // location as the origin??? 
 
 var corsOptions = {
+  allroutes: true,
   origin: `http://localhost:3000`,
   credentials: true,
   optionsSuccessStatus: 200, // some legacy browsers (IE11, various SmartTVs) choke on 204
@@ -29,8 +30,10 @@ app.use(cors(corsOptions));
 app.use(/^\/api\/.*/, async (req, res, next) => {
   console.log('Verifying JWT in middleware.');
   const jwt = req.cookies[process.env.COOKIE_NAME];
+  console.log('Cookie sent: ', jwt);
   if (jwt) {
     const payload = await verifyJwt(jwt);
+    console.log('Payload from jwt: ', payload);
     if (payload) {
       req.user = payload.payload;
       next();
