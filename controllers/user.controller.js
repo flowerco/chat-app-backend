@@ -17,7 +17,7 @@ const fetchUser = async (req, res) => {
         currentChat: user.currentChat,
         userImg: user.userImg,
         keepTime: user.keepTime,
-        isSearchable: user.isSearchable
+        isSearchable: user.isSearchable,
       });
     } else {
       res.sendStatus(404);
@@ -56,7 +56,6 @@ const searchUsers = async (req, res) => {
   }
 };
 
-
 const updateUserProperty = async (req, res) => {
   const { currentUserId, propertyName, propertyValue } = req.body;
   try {
@@ -65,8 +64,10 @@ const updateUserProperty = async (req, res) => {
     await user.save();
     return res.status(201).json(propertyValue);
   } catch (error) {
-    return res.status(500).json({message: `Failed to updated user ${propertyName}`});
+    return res
+      .status(500)
+      .json({ message: `Failed to updated user ${propertyName}` });
   }
-}
+};
 
 module.exports = { fetchUser, searchUsers, updateUserProperty };

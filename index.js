@@ -27,12 +27,12 @@ var corsOptions = {
 app.use(cors(corsOptions));
 
 app.use(/^\/api\/.*/, async (req, res, next) => {
-  console.log('Verifying JWT in middleware.');
+  // console.log('Verifying JWT in middleware.');
   const jwt = req.cookies[process.env.COOKIE_NAME];
-  console.log('Cookie sent: ', jwt);
+  // console.log('Cookie sent: ', jwt);
   if (jwt) {
     const payload = await verifyJwt(jwt);
-    console.log('Payload from jwt: ', payload);
+    // console.log('Payload from jwt: ', payload);
     if (payload) {
       req.user = payload.payload;
       next();

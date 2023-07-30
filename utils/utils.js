@@ -6,7 +6,6 @@ const findAndAdd = async (userId, addId, type) => {
   // Add either the chat or contact ID to the current user chats or contacts list.
   if (!currentUser[type].includes(addId)) {
     currentUser[type].push(addId);
-    console.log(currentUser[type]);
     // For chats, set the currentChat to the chat just created, so it shows up on screen immediately.
     if (type === 'chats') {
       currentUser.currentChat = addId;

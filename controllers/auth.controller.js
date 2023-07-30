@@ -16,26 +16,6 @@ const removeEmailAndPassword = (user) => {
   }
 }
 
-const verifyLogin = async (req, res) => {
-  const jwt = req.cookies[process.env.COOKIE_NAME];
-  if (jwt) {
-    const payload = await verifyJwt(jwt);
-    if (payload) {
-      // Return the user, but not their email or password
-      let user = await User.findOne({
-        _id: payload.payload.id,
-      }).select(['-email', '-password']);
-
-      res.status(200);
-      res.send(user);
-    } else {
-      res.sendStatus(403);
-    }
-  } else {
-    res.sendStatus(401);
-  }
-};
-
 const register = async (req, res) => {
   const user = req.body;
   try {
@@ -46,12 +26,10 @@ const register = async (req, res) => {
       res.send('Error: User already exists');
     } else {
       // If none found, create new User
-      console.log('User data received: ', user);
       const newUserDoc = new User(user);
       newUserDoc.save().then(async (newUser) => {
 
         const jwt = await createJwt(newUser);
-        console.log(`Setting cookie ${process.env.COOKIE_NAME} with jwt: `, jwt);
         res.setHeader(
           'Set-Cookie',
           serialize(process.env.COOKIE_NAME, jwt, {
@@ -73,7 +51,6 @@ const register = async (req, res) => {
 
 const login = async (req, res) => {
   const { email, password } = req.body;
-  console.log('Running login');
   try {
     const testUser = await User.findOne({ email });
     if (!testUser) {
@@ -97,7 +74,6 @@ const login = async (req, res) => {
             maxAge: 60 * 60 * 8,
           })
         );
-        console.log('User found.');
         // Remove the login details from the returned user.
         res.status(200);
         res.send(removeEmailAndPassword(testUser));
@@ -106,6 +82,26 @@ const login = async (req, res) => {
   } catch (error) {
     res.status(500);
     res.send(error);
+  }
+};
+
+const verifyLogin = async (req, res) => {
+  const jwt = req.cookies[process.env.COOKIE_NAME];
+  if (jwt) {
+    const payload = await verifyJwt(jwt);
+    if (payload) {
+      // Return the user, but not their email or password
+      let user = await User.findOne({
+        _id: payload.payload.id,
+      }).select(['-email', '-password']);
+
+      res.status(200);
+      res.send(user);
+    } else {
+      res.sendStatus(403);
+    }
+  } else {
+    res.sendStatus(401);
   }
 };
 

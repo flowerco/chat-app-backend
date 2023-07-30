@@ -21,10 +21,8 @@ const addContact = async (req, res) => {
   // console.log(`Adding user ${newContactId} as a new contact for user ${currentUserId}`);
   try {
     const currentUser = await User.findOne({ _id: currentUserId });
-    console.log(currentUser);
     if (!currentUser.contacts.includes(newContactId)) {
       currentUser.contacts.push(newContactId);
-      console.log(currentUser.contacts);
       await currentUser.save();
     }
     return res.status(201).json(currentUser);
@@ -35,7 +33,6 @@ const addContact = async (req, res) => {
 
 const deleteContact = async (req, res) => {
   const { currentUserId, contactId } = req.body;
-  console.log(`Deleting user ${contactId} from the contact list of user ${currentUserId}`);
   try {
     const currentUser = await User.findOne({ _id: currentUserId });
     const contactIndex = currentUser.contacts.indexOf(contactId);
