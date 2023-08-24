@@ -1,3 +1,4 @@
+const onlineUsers = require('../index');
 const { User, Chat } = require('../models/schema');
 const { findAndAdd } = require('../utils/utils');
 const { updateUserProperty } = require('./user.controller');
@@ -44,21 +45,8 @@ const fetchChatForContact = async (req, res) => {
     // If we find a chat for the relevant contact, return this chat ID.
     if (contactChats.length > 0) {
       chatId = contactChats[0]._id;
-    } 
-    // else {
-    //   // If not, create a new chat, add this to the user and contact chat lists, then return the new ID.
-    //   // const newChat = new Chat({
-      //   userList: [currentUserId, contactId],
-      // });
-      // newChat.save().then(async (chat) => {
-      //   // Add the new chat to the current user's chat list.
-      //   user.chats.push(chat);
-      //   user.save();
-      //   // Don't forget to add the new chat to the contact's chat list too!
-      //   findAndAdd(contactId, chat._id, 'chats');
-      // });
-      // chatId = newChat._id;
-    // }
+    }
+    // If no chat found, the null response will be handled and a new chat created on the front end.
     return res.status(200).json(chatId);
   } catch (error) {
     return res
@@ -69,22 +57,28 @@ const fetchChatForContact = async (req, res) => {
 
 const fetchChatById = async (req, res) => {
   const { userId, chatId } = req.body;
-  // console.log(`Looking for chat ${chatId} on user ${userId}`);
   try {
     const chat = await Chat.findOne({ _id: chatId }).populate('userList');
     if (chat) {
       const newChat = {
         _id: chat._id,
         userList: chat.userList
-        .filter((user) => user._id.toString() !== userId)
-        .map((user) => {
-          return {
-            _id: user._id,
-            firstName: user.firstName,
-            lastName: user.lastName,
-            userImg: user.userImg,
-          };
-        }),
+          .filter((user) => user._id.toString() !== userId)
+          .map((user) => {
+            console.log(
+              `Checking whether user id ${user._id.toString()} is in the list of online users:`
+            );
+            console.log(onlineUsers);
+            const online = user._id.toString() in onlineUsers.onlineUsers;
+            console.log('Online flag is: ', online);
+            return {
+              _id: user._id,
+              firstName: user.firstName,
+              lastName: user.lastName,
+              userImg: user.userImg,
+              online,
+            };
+          }),
       };
       return res.status(200).json(newChat);
     } else {
