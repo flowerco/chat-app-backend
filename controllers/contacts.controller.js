@@ -1,22 +1,35 @@
-const { User } = require("../models/schema");
-
+const { User } = require('../models/schema');
+const onlineUsers = require('../index');
 
 const fetchContacts = async (req, res) => {
-
   const { userId } = req.body;
   try {
     const currentUser = await User.findOne({ _id: userId });
-    const userContacts = await User.find().where('_id').in(currentUser.contacts).exec();
-    const userContactNames = userContacts.map(({ firstName, lastName, _id, userImg }) => ({ firstName, lastName, _id, userImg }));
+    const userContacts = await User.find()
+      .where('_id')
+      .in(currentUser.contacts)
+      .exec();
+    console.log('Initial fetch of the contacts.');
+    console.log('Online contacts: ', onlineUsers);
+    const userContactNames = userContacts.map(
+      ({ firstName, lastName, _id, userImg }) => {
+        const online = _id.toString() in onlineUsers.onlineUsers;
+        return {
+          firstName,
+          lastName,
+          _id,
+          userImg,
+          online,
+        };
+      }
+    );
     return res.status(200).json(userContactNames);
   } catch (err) {
-    return res.status(500).json({message: 'Failed to fetch contacts'});
+    return res.status(500).json({ message: 'Failed to fetch contacts' });
   }
-
-}
+};
 
 const addContact = async (req, res) => {
-
   const { currentUserId, newContactId } = req.body;
   // console.log(`Adding user ${newContactId} as a new contact for user ${currentUserId}`);
   try {
@@ -27,9 +40,9 @@ const addContact = async (req, res) => {
     }
     return res.status(201).json(currentUser);
   } catch (error) {
-    return res.status(500).json({message: 'Failed to add contact'});
+    return res.status(500).json({ message: 'Failed to add contact' });
   }
-}
+};
 
 const deleteContact = async (req, res) => {
   const { currentUserId, contactId } = req.body;
@@ -42,9 +55,9 @@ const deleteContact = async (req, res) => {
     }
     return res.status(200).json(currentUser);
   } catch (error) {
-    return res.status(500).json({message: 'Failed to add contact'});
+    return res.status(500).json({ message: 'Failed to add contact' });
   }
-}
+};
 
 const clearContacts = async (req, res) => {
   const { userId } = req.body;
@@ -54,9 +67,8 @@ const clearContacts = async (req, res) => {
     await currentUser.save();
     return res.status(201).json(currentUser);
   } catch (error) {
-    return res.status(500).json({message: 'Failed to delete contacts'});
+    return res.status(500).json({ message: 'Failed to delete contacts' });
   }
-}
+};
 
-
-module.exports = { fetchContacts, addContact, deleteContact, clearContacts }
+module.exports = { fetchContacts, addContact, deleteContact, clearContacts };
