@@ -9,8 +9,6 @@ const fetchContacts = async (req, res) => {
       .where('_id')
       .in(currentUser.contacts)
       .exec();
-    console.log('Initial fetch of the contacts.');
-    console.log('Online contacts: ', onlineUsers);
     const userContactNames = userContacts.map(
       ({ firstName, lastName, _id, userImg }) => {
         const online = _id.toString() in onlineUsers.onlineUsers;
@@ -31,7 +29,6 @@ const fetchContacts = async (req, res) => {
 
 const addContact = async (req, res) => {
   const { currentUserId, newContactId } = req.body;
-  // console.log(`Adding user ${newContactId} as a new contact for user ${currentUserId}`);
   try {
     const currentUser = await User.findOne({ _id: currentUserId });
     if (!currentUser.contacts.includes(newContactId)) {

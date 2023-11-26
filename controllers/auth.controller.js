@@ -13,8 +13,8 @@ const removeEmailAndPassword = (user) => {
     currentChat: user.currentChat,
     keepTime: user.keepTime,
     isSearchable: user.isSearchable,
-  }
-}
+  };
+};
 
 const register = async (req, res) => {
   const user = req.body;
@@ -28,7 +28,6 @@ const register = async (req, res) => {
       // If none found, create new User
       const newUserDoc = new User(user);
       newUserDoc.save().then(async (newUser) => {
-
         const jwt = await createJwt(newUser);
         res.setHeader(
           'Set-Cookie',
@@ -38,7 +37,6 @@ const register = async (req, res) => {
             maxAge: 60 * 60 * 8,
           })
         );
-        console.log('Cookie created');
         res.status(200);
         res.send(removeEmailAndPassword(newUser));
       });

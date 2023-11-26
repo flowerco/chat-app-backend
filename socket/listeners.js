@@ -15,14 +15,13 @@ const addSocketListeners = (io) => {
       // 1. Add the socket ID for this user to the global map
       if (onlineUsers[userId]) {
         onlineUsers[userId].push(socket.id);
+        q;
       } else {
         onlineUsers[userId] = [socket.id];
       }
-      // console.log('Global online user list: ', onlineUsers);
 
       // 2. Fetch the list of sockets for this user's online contacts.
       const socketIds = await getContactSocketsForUser(userId, onlineUsers);
-      // console.log('List of current Socket IDs: ', socketIds);
 
       // 4. Emit the online status to the socket for each contact
       socket.to(socketIds).emit('user-online', userId);
@@ -55,21 +54,18 @@ const addSocketListeners = (io) => {
     });
 
     socket.on('join-chat', async (chatId, name) => {
-      // console.log(`${name} is joining room: ${chatId}`);
       socket.join(chatId);
       // Note: only broadcasts to other users in the chat, not the sender.
       socket.to(chatId).emit('user-connected', name);
     });
 
     socket.on('leave-chat', async (chatId, name) => {
-      // console.log(`${name} is leaving room: ${chatId}`);
       socket.leave(chatId);
       // Note: only broadcasts to other users in the chat, not the sender.
       socket.to(chatId).emit('user-disconnected', name);
     });
 
     socket.on('disconnect', () => {
-      console.log(`User ${socket.userId} disconnected`);
       onlineUsers = removeSocketFromUserMap(socket.userId, socket, onlineUsers);
       // const socketIds = await getContactSocketsForUser(socket.userId, onlineUsers);
       io.emit('user-offline', socket.userId);

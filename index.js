@@ -16,24 +16,19 @@ const port = config.port;
 // Middleware for all requests to the express server
 app.use(cookieParser());
 
-// TODO: For secure connections we need a specific origin here. Can we deploy to railway
-// and use the SameSite option, or should we deploy elsewhere and use that deployment
-// location as the origin???
-
+// For secure connections we need a specific origin here.
+// This will be specified in the environment variables, and assigned in the config file.
 var corsOptions = {
   origin: config.corsUrl,
   credentials: true,
-  optionsSuccessStatus: 200, // some legacy browsers (IE11, various SmartTVs) choke on 204
+  optionsSuccessStatus: 200,
 };
 app.use(cors(corsOptions));
 
 app.use(/^\/api\/.*/, async (req, res, next) => {
-  // console.log('Verifying JWT in middleware.');
   const jwt = req.cookies[process.env.COOKIE_NAME];
-  // console.log('Cookie sent: ', jwt);
   if (jwt) {
     const payload = await verifyJwt(jwt);
-    // console.log('Payload from jwt: ', payload);
     if (payload) {
       req.user = payload.payload;
       next();
@@ -49,9 +44,7 @@ app.use(express.json());
 app.use(router);
 app.use(bodyParser.json());
 
-const server = app.listen(port, () => {
-  console.log(`Express server running on port ${port}`);
-});
+const server = app.listen(port);
 
 // Socket io setup
 const io = require('socket.io')(server, {

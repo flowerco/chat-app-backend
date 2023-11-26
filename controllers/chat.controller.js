@@ -88,9 +88,6 @@ const fetchChatById = async (req, res) => {
 
 const addChat = async (req, res) => {
   const { currentUserId, contactId } = req.body;
-  console.log(
-    `Adding chat between contact ${contactId} and current user ${currentUserId}`
-  );
   // TODO: Do we want to check for an existing chat with this contact, or always add a new one...? Maybe it could be the same
   // contact but with a new title? Do we want chat title/room name as a property of the Chat?
   try {
