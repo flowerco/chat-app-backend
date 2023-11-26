@@ -1,4 +1,4 @@
-const onlineUsers = require('../index');
+const onlineUsers = require('../socket/listeners');
 const { User, Chat } = require('../models/schema');
 const { findAndAdd } = require('../utils/utils');
 const { updateUserProperty } = require('./user.controller');
@@ -65,12 +65,7 @@ const fetchChatById = async (req, res) => {
         userList: chat.userList
           .filter((user) => user._id.toString() !== userId)
           .map((user) => {
-            console.log(
-              `Checking whether user id ${user._id.toString()} is in the list of online users:`
-            );
-            console.log(onlineUsers);
             const online = user._id.toString() in onlineUsers.onlineUsers;
-            console.log('Online flag is: ', online);
             return {
               _id: user._id,
               firstName: user.firstName,

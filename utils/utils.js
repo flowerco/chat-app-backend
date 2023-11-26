@@ -29,8 +29,7 @@ const getContactSocketsForUser = async (userId, onlineUsers) => {
   } catch (e) {
     console.log('Cannot find user with ID ', userId);
   }
-
-  console.log('List of current contact IDs: ', contactIds);
+  // console.log('List of current contact IDs: ', contactIds);
 
   // 2. Reduce the contact IDs to a list of mapped socket IDs
   const socketIds = contactIds.reduce((socketList, contactId) => {

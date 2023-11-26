@@ -1,5 +1,5 @@
 const { User } = require('../models/schema');
-const onlineUsers = require('../index');
+const onlineUsers = require('../socket/listeners');
 
 const fetchContacts = async (req, res) => {
   const { userId } = req.body;
