@@ -15,7 +15,6 @@ const addSocketListeners = (io) => {
       // 1. Add the socket ID for this user to the global map
       if (onlineUsers[userId]) {
         onlineUsers[userId].push(socket.id);
-        q;
       } else {
         onlineUsers[userId] = [socket.id];
       }
